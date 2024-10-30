@@ -2,13 +2,19 @@ import React, { useState, useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { useTable, useSortBy } from 'react-table';
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
+=======
+>>>>>>> recuperacion
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function Reportes() {
+<<<<<<< HEAD
   const navigate = useNavigate();
 
+=======
+>>>>>>> recuperacion
   // Datos del gráfico de barras
   const data = {
     labels: Array.from({ length: 21 }, (_, i) => i + 1),
@@ -38,14 +44,22 @@ function Reportes() {
   const [filterCategory, setFilterCategory] = useState('');
 
   const tableData = useMemo(() => [
+<<<<<<< HEAD
     { id: 1, time: 'Jue 30 2024 11:30:42', status: 'ZEEK', category: 'NETWORK', description: 'SQL Injection detectado' },
     { id: 2, time: 'Jue 30 2024 11:30:54', status: 'ZEEK', category: 'APPLICATION', description: 'XSS Vulnerabilidad' },
     { id: 3, time: 'Jue 30 2024 11:30:57', status: 'ZEEK', category: 'NETWORK', description: 'Ataque de fuerza bruta' },
     { id: 4, time: 'Jue 30 2024 11:31:02', status: 'ZEEK', category: 'APPLICATION', description: 'Buffer overflow detectado' },
+=======
+    { id: 1, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Red', Detalles: 'SQL Injection detectado', Generado_Por: 'Juan Pérez', ID_Usuario: 1 },
+    { id: 2, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Aplicación', Detalles: 'XSS Vulnerabilidad', Generado_Por: 'Ana Gómez', ID_Usuario: 2 },
+    { id: 3, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Red', Detalles: 'Ataque de fuerza bruta', Generado_Por: 'Juan Pérez', ID_Usuario: 1 },
+    { id: 4, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Aplicación', Detalles: 'Buffer overflow detectado', Generado_Por: 'Ana Gómez', ID_Usuario: 2 },
+>>>>>>> recuperacion
   ], []);
 
   const filteredData = useMemo(() => {
     return tableData.filter(row =>
+<<<<<<< HEAD
       row.description.toLowerCase().includes(searchTerm.toLowerCase()) &&
       (!filterCategory || row.category === filterCategory)
     );
@@ -57,6 +71,20 @@ function Reportes() {
     { Header: 'STATUS', accessor: 'status' },
     { Header: 'CATEGORIA', accessor: 'category' },
     { Header: 'DESCRIPCION', accessor: 'description' },
+=======
+      row.Detalles.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (!filterCategory || row.Tipo_Reporte === filterCategory)
+    );
+  }, [searchTerm, filterCategory, tableData]);
+
+  const columns = useMemo(() => [
+    { Header: 'ID Reporte', accessor: 'id' },
+    { Header: 'Fecha de Generación', accessor: 'Fecha_Generacion' },
+    { Header: 'Tipo de Reporte', accessor: 'Tipo_Reporte' },
+    { Header: 'Detalles', accessor: 'Detalles' },
+    { Header: 'Generado Por', accessor: 'Generado_Por' },
+    { Header: 'ID Usuario', accessor: 'ID_Usuario' },
+>>>>>>> recuperacion
   ], []);
 
   const {
@@ -69,6 +97,7 @@ function Reportes() {
 
   const exportCSV = () => {
     const csvRows = [
+<<<<<<< HEAD
       ['ID', 'TIEMPO', 'STATUS', 'CATEGORIA', 'DESCRIPCION'], 
       ...filteredData.map(row => [
         row.id,
@@ -76,6 +105,16 @@ function Reportes() {
         row.status,
         row.category,
         `"${row.description}"`
+=======
+      ['ID Reporte', 'Fecha de Generación', 'Tipo de Reporte', 'Detalles', 'Generado Por', 'ID Usuario'],
+      ...filteredData.map(row => [
+        row.id,
+        row.Fecha_Generacion,
+        row.Tipo_Reporte,
+        `"${row.Detalles}"`,
+        row.Generado_Por,
+        row.ID_Usuario,
+>>>>>>> recuperacion
       ])
     ];
 
@@ -83,12 +122,19 @@ function Reportes() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
+<<<<<<< HEAD
     link.setAttribute('download', 'reportes.csv'); 
+=======
+    link.setAttribute('download', 'reportes.csv');
+>>>>>>> recuperacion
     document.body.appendChild(link);
     link.click();
   };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> recuperacion
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -108,9 +154,15 @@ function Reportes() {
           onChange={(e) => setFilterCategory(e.target.value)}
           style={styles.filterSelect}
         >
+<<<<<<< HEAD
           <option value="">Filtrar por categoría</option>
           <option value="NETWORK">NETWORK</option>
           <option value="APPLICATION">APPLICATION</option>
+=======
+          <option value="">Filtrar por tipo de reporte</option>
+          <option value="Análisis de Red">Análisis de Red</option>
+          <option value="Análisis de Aplicación">Análisis de Aplicación</option>
+>>>>>>> recuperacion
         </select>
         <button onClick={exportCSV} style={styles.exportButton}>Exportar CSV</button>
       </div>
