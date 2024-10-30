@@ -1,9 +1,5 @@
 import React from 'react';
-<<<<<<< HEAD
-import { Link } from 'react-router-dom'; 
-=======
 import { Link } from 'react-router-dom';
->>>>>>> recuperacion
 
 function Navbar() {
   return (
@@ -11,19 +7,13 @@ function Navbar() {
       <h1 style={styles.title}>Sistema de Ciberseguridad</h1>
       <div style={styles.links}>
         <Link to="/dashboard" style={styles.link}>Dashboard</Link>
-<<<<<<< HEAD
-        <Link to="/monitoreo" style={styles.link}>Monitoreo en Tiempo Real</Link> 
-        <Link to="/vulnerabilidades" style={styles.link}>Vulnerabilidades</Link> 
-        <Link to="/reportes" style={styles.link}>Reportes</Link>
-=======
-        <Link to="/monitoreo" style={styles.link}>Monitoreo</Link>
+        <Link to="/monitoreo" style={styles.link}>Monitoreo en Tiempo Real</Link>
         <Link to="/vulnerabilidades" style={styles.link}>Vulnerabilidades</Link>
         <Link to="/reportes" style={styles.link}>Reportes</Link>
         <Link to="/usuarios" style={styles.link}>Usuarios</Link>
         <Link to="/incidentes" style={styles.link}>Incidentes</Link>
         <Link to="/politicas" style={styles.link}>Políticas</Link>
         <Link to="/integraciones" style={styles.link}>Integraciones</Link>
->>>>>>> recuperacion
       </div>
     </nav>
   );

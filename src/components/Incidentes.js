@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTable, useSortBy } from 'react-table';
 
 function Incidentes() {
   const [incidentes, setIncidentes] = useState([
@@ -44,6 +45,40 @@ function Incidentes() {
     });
   };
 
+  const eliminarIncidente = (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este incidente?")) {
+      setIncidentes(incidentes.filter((incidente) => incidente.ID_Incidente !== id));
+    }
+  };
+
+  const data = useMemo(() => incidentes, [incidentes]);
+
+  const columns = useMemo(() => [
+    { Header: 'ID', accessor: 'ID_Incidente' },
+    { Header: 'Fecha de Inicio', accessor: 'Fecha_Inicio' },
+    { Header: 'Fecha de Fin', accessor: 'Fecha_Fin' },
+    { Header: 'Descripción', accessor: 'Descripcion' },
+    { Header: 'Estado', accessor: 'Estado' },
+    { Header: 'Acción Tomada', accessor: 'Accion_Tomada' },
+    {
+      Header: 'Eliminar',
+      accessor: 'Eliminar',
+      Cell: ({ row }) => (
+        <button onClick={() => eliminarIncidente(row.original.ID_Incidente)} style={styles.deleteButton}>
+          X
+        </button>
+      ),
+    },
+  ], [incidentes]);
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({ columns, data }, useSortBy);
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Incidentes</h1>
@@ -87,28 +122,34 @@ function Incidentes() {
         <button onClick={agregarIncidente} style={styles.addButton}>Agregar Incidente</button>
       </div>
 
-      <table style={styles.table}>
+      <table {...getTableProps()} style={styles.table}>
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Fecha de Inicio</th>
-            <th>Fecha de Fin</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Acción Tomada</th>
-          </tr>
-        </thead>
-        <tbody>
-          {incidentes.map((incidente) => (
-            <tr key={incidente.ID_Incidente}>
-              <td style={styles.textCenter}>{incidente.ID_Incidente}</td>
-              <td style={styles.textCenter}>{incidente.Fecha_Inicio}</td>
-              <td style={styles.textCenter}>{incidente.Fecha_Fin}</td>
-              <td style={styles.textCenter}>{incidente.Descripcion}</td>
-              <td style={styles.textCenter}>{incidente.Estado}</td>
-              <td style={styles.textCenter}>{incidente.Accion_Tomada}</td>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} style={styles.th}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                  </span>
+                </th>
+              ))}
             </tr>
           ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()} style={styles.td}>
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -147,7 +188,7 @@ const styles = {
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
   },
   th: {
     padding: '12px 15px',
@@ -155,14 +196,21 @@ const styles = {
     borderBottom: '2px solid #ddd',
     textAlign: 'left',
     fontWeight: 'bold',
+    cursor: 'pointer',
   },
   td: {
     padding: '12px 15px',
     borderBottom: '1px solid #ddd',
     textAlign: 'left',
+    backgroundColor: '#ffffff',
   },
-  textCenter: {
-    textAlign: 'center',
+  deleteButton: {
+    backgroundColor: 'red',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '5px 10px',
+    cursor: 'pointer',
   },
 };
 

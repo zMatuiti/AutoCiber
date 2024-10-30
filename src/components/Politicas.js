@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTable, useSortBy } from 'react-table';
 
 function Politicas() {
   const [politicas, setPoliticas] = useState([
@@ -17,12 +18,7 @@ function Politicas() {
   });
 
   const agregarPolitica = () => {
-    if (
-      !nuevaPolitica.Nombre ||
-      !nuevaPolitica.Descripcion ||
-      !nuevaPolitica.Tipo ||
-      !nuevaPolitica.Fecha_implementacion
-    ) {
+    if (!nuevaPolitica.Nombre || !nuevaPolitica.Descripcion || !nuevaPolitica.Tipo || !nuevaPolitica.Fecha_implementacion) {
       alert('Todos los campos deben estar llenos para agregar una política.');
       return;
     }
@@ -56,6 +52,40 @@ function Politicas() {
       )
     );
   };
+
+  const data = useMemo(() => politicas, [politicas]);
+
+  const columns = useMemo(() => [
+    { Header: 'Nombre', accessor: 'Nombre' },
+    { Header: 'Descripción', accessor: 'Descripcion' },
+    { Header: 'Tipo', accessor: 'Tipo' },
+    { Header: 'Fecha de Implementación', accessor: 'Fecha_implementacion' },
+    {
+      Header: 'Activa',
+      accessor: 'Activa',
+      Cell: ({ value }) => (value === 1 ? 'Sí' : 'No'),
+    },
+    {
+      Header: 'Acciones',
+      accessor: 'acciones',
+      Cell: ({ row }) => (
+        <div style={styles.actionsCell}>
+          <button onClick={() => toggleActiva(row.original.ID_politica)} style={styles.toggleButton}>
+            {row.original.Activa === 1 ? 'Desactivar' : 'Activar'}
+          </button>
+          <button onClick={() => eliminarPolitica(row.original.ID_politica)} style={styles.deleteButton}>X</button>
+        </div>
+      ),
+    },
+  ], [politicas]);
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+  } = useTable({ columns, data }, useSortBy);
 
   return (
     <div style={styles.container}>
@@ -93,35 +123,34 @@ function Politicas() {
         <button onClick={agregarPolitica} style={styles.addButton}>Agregar Política</button>
       </div>
 
-      <table style={styles.table}>
+      <table {...getTableProps()} style={styles.table}>
         <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Tipo</th>
-            <th>Fecha de Implementación</th>
-            <th>Activa</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {politicas.map((politica) => (
-            <tr key={politica.ID_politica}>
-              <td style={styles.textCenter}>{politica.Nombre}</td>
-              <td style={styles.textCenter}>{politica.Descripcion}</td>
-              <td style={styles.textCenter}>{politica.Tipo}</td>
-              <td style={styles.textCenter}>{politica.Fecha_implementacion}</td>
-              <td style={styles.textCenter}>{politica.Activa === 1 ? 'Sí' : 'No'}</td>
-              <td style={styles.actionsCell}>
-                <button onClick={() => toggleActiva(politica.ID_politica)} style={styles.toggleButton}>
-                  {politica.Activa === 1 ? 'Desactivar' : 'Activar'}
-                </button>
-                <button onClick={() => eliminarPolitica(politica.ID_politica)} style={styles.deleteButton}>
-                  ❌
-                </button>
-              </td>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} style={styles.th}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                  </span>
+                </th>
+              ))}
             </tr>
           ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()} style={styles.td}>
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -168,14 +197,13 @@ const styles = {
     borderBottom: '2px solid #ddd',
     textAlign: 'left',
     fontWeight: 'bold',
+    cursor: 'pointer',
   },
   td: {
     padding: '12px 15px',
     borderBottom: '1px solid #ddd',
+    backgroundColor: '#ffffff',
     textAlign: 'left',
-  },
-  textCenter: {
-    textAlign: 'center',
   },
   actionsCell: {
     display: 'flex',
@@ -184,22 +212,19 @@ const styles = {
   },
   toggleButton: {
     padding: '5px 10px',
-    borderRadius: '5px',
-    cursor: 'pointer',
     backgroundColor: '#007bff',
     color: 'white',
+    borderRadius: '5px',
     border: 'none',
+    cursor: 'pointer',
   },
   deleteButton: {
     padding: '5px 10px',
-    borderRadius: '5px',
-    cursor: 'pointer',
     backgroundColor: 'red',
     color: 'white',
+    borderRadius: '5px',
     border: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    cursor: 'pointer',
   },
 };
 
