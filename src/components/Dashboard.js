@@ -1,60 +1,112 @@
-import React from 'react';
-import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import React, { useState } from 'react';
+import { Line, Bar, Pie } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import './Dashboard.css';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend
 );
 
 function Dashboard() {
+  const [reportCount, setReportCount] = useState(80);
+  const [attackCount, setAttackCount] = useState(16);
+  const [vulnerabilityProgress, setVulnerabilityProgress] = useState(75);
+  const [otherProgress, setOtherProgress] = useState(15);
+
   const lineData = {
-    labels: Array.from({ length: 10 }, (_, i) => i),
+    labels: Array.from({ length: 10 }, (_, i) => i + 1),
     datasets: [
       {
         label: 'Vulnerabilidades',
         data: [500, 400, 600, 800, 700, 500, 600, 700, 800, 600],
         borderColor: 'red',
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        fill: false,
       },
       {
         label: 'Posibles Ataques',
         data: [200, 300, 400, 500, 600, 400, 300, 200, 400, 500],
         borderColor: 'blue',
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        fill: false,
+      },
+    ],
+  };
+
+  // Definición de barData para los gráficos de barras en las tarjetas
+  const barData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        label: 'Reportes',
+        data: [65, 59, 80, 81, 56, 55],
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+      },
+    ],
+  };
+
+  const lineOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: true, text: 'Actividad de Reportes' }
+    },
+    scales: {
+      x: { title: { display: true, text: 'Meses' } },
+      y: { title: { display: true, text: 'Cantidad de Reportes' } }
+    }
+  };
+
+  const pieData = {
+    labels: ['Crítico', 'Alto', 'Moderado', 'Bajo'],
+    datasets: [
+      {
+        data: [30, 50, 100, 40],
+        backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#66bb6a'],
       },
     ],
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Reportes</h1>
-      </div>
-      <div style={styles.cardsContainer}>
-        <div style={styles.card}>
+    <div className="dashboard-container">
+      <h1 className="dash_title">Dashboard</h1>
+
+      <div className="cards-container">
+        <div className="card">
           <h2>Reportes</h2>
-          <p style={styles.cardValue}>80</p>
+          <p className="card-value">{reportCount}</p>
+          <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
         </div>
-        <div style={styles.card}>
+        <div className="card">
           <h2>Posibles Ataques</h2>
-          <p style={styles.cardValue}>16</p>
+          <p className="card-value">{attackCount}</p>
+          <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
         </div>
-        <div style={styles.card}>
+        <div className="card">
           <h2>Vulnerabilidades</h2>
-          <div style={styles.circularContainer}>
+          <div className="circular-container">
             <CircularProgressbar
-              value={75}
-              text={`${75}%`}
+              value={vulnerabilityProgress}
+              text={`${vulnerabilityProgress}%`}
               styles={buildStyles({
                 textSize: '24px',
                 pathColor: 'green',
@@ -64,12 +116,12 @@ function Dashboard() {
             />
           </div>
         </div>
-        <div style={styles.card}>
+        <div className="card">
           <h2>Otro</h2>
-          <div style={styles.circularContainer}>
+          <div className="circular-container">
             <CircularProgressbar
-              value={15}
-              text={`${15}%`}
+              value={otherProgress}
+              text={`${otherProgress}%`}
               styles={buildStyles({
                 textSize: '24px',
                 pathColor: 'green',
@@ -81,58 +133,69 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Gráfico de líneas */}
-      <div style={styles.chartContainer}>
-        <h2>Gráfico</h2>
-        <div style={styles.chartWrapper}>
-          <Line data={lineData} options={{ responsive: true }} />
+      <div className="chart-row">
+        <div className="chart-container">
+          <h2>Actividad de Reportes</h2>
+          <Line data={lineData} options={lineOptions} />
         </div>
+
+        <div className="chart-container pie-chart-container">
+          <h2>Nivel de Riesgo</h2> {/* Título alineado según el CSS */}
+          <div className="pie-chart-wrapper">
+            <div style={{ width: '250px', height: '250px' }}>
+              <Pie data={pieData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+            </div>
+            <div className="pie-chart-legend">
+              <div><span style={{ color: '#ff6384' }}>⬤</span> Crítico</div>
+              <div><span style={{ color: '#36a2eb' }}>⬤</span> Alto</div>
+              <div><span style={{ color: '#ffce56' }}>⬤</span> Moderado</div>
+              <div><span style={{ color: '#66bb6a' }}>⬤</span> Bajo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div className="data-table">
+        <h2>Detalles de Incidentes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Severidad</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2024-01-15</td>
+              <td>Ataque de red detectado</td>
+              <td>Alto</td>
+              <td>Pendiente</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>2024-02-10</td>
+              <td>Inyección SQL</td>
+              <td>Crítico</td>
+              <td>Resuelto</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>2024-03-05</td>
+              <td>Intento de acceso no autorizado</td>
+              <td>Moderado</td>
+              <td>En Proceso</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-  },
-  cardsContainer: {
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'space-between',
-    marginBottom: '20px',
-  },
-  card: {
-    flex: 1,
-    padding: '20px',
-    borderRadius: '10px',
-    backgroundColor: '#f9f9f9',
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
-  },
-  cardValue: {
-    fontSize: '36px',
-    fontWeight: 'bold',
-    margin: '10px 0',
-  },
-  circularContainer: {
-    width: '80px',
-    height: '80px',
-    margin: '0 auto',
-  },
-  chartContainer: {
-    marginTop: '20px',
-    padding: '20px',
-    borderRadius: '10px',
-    backgroundColor: '#f9f9f9',
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-  },
-  chartWrapper: {
-    width: '90%',
-    maxWidth: '800px',
-    margin: '0 auto',
-  },
-};
 
 export default Dashboard;

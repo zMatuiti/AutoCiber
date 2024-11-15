@@ -1,48 +1,50 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import './Navbar.css';
 
 function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
   return (
-    <nav style={styles.navbar}>
-      <h1 style={styles.title}>Sistema de Ciberseguridad</h1>
-      <div style={styles.links}>
-        <Link to="/dashboard" style={styles.link}>Dashboard</Link>
-        <Link to="/monitoreo" style={styles.link}>Monitoreo en Tiempo Real</Link>
-        <Link to="/vulnerabilidades" style={styles.link}>Vulnerabilidades</Link>
-        <Link to="/reportes" style={styles.link}>Reportes</Link>
-        <Link to="/usuarios" style={styles.link}>Usuarios</Link>
-        <Link to="/incidentes" style={styles.link}>Incidentes</Link>
-        <Link to="/politicas" style={styles.link}>Políticas</Link>
-        <Link to="/integraciones" style={styles.link}>Integraciones</Link>
+    <nav className="navbar" ref={menuRef}>
+      <Link to="/dashboard" className="title">Sistema de Ciberseguridad</Link>
+      <div className={`hamburger-icon ${isOpen ? 'open' : ''}`} onClick={toggleMenu}>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div className={`links ${isOpen ? 'open' : ''}`}>
+        <Link to="/dashboard">Inicio</Link>
+        <Link to="/monitoreo">Monitoreo en Tiempo Real</Link>
+        <Link to="/vulnerabilidades">Vulnerabilidades</Link>
+        <Link to="/reportes">Reportes</Link>
+        <Link to="/usuarios">Usuarios</Link>
+        <Link to="/incidentes">Incidentes</Link>
+        <Link to="/politicas">Políticas</Link>
+        <Link to="/dispositivos">Dispositivos</Link>
+        <Link to="/integraciones">Integraciones</Link>
       </div>
     </nav>
   );
 }
-
-const styles = {
-  navbar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#f5f5f5',
-    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px',
-    marginBottom: '20px',
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-  },
-  links: {
-    display: 'flex',
-    gap: '20px',
-  },
-  link: {
-    textDecoration: 'none',
-    color: '#333',
-    fontWeight: 'bold',
-  },
-};
 
 export default Navbar;

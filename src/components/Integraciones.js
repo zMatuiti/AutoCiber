@@ -1,24 +1,23 @@
-// src/components/Integraciones.js
 import React, { useState, useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
 
 function Integraciones() {
-  // Datos ficticios para la tabla de integraciones
   const tableData = useMemo(() => [
     { ID_Integracion: 1, Herramienta: 'Zeek', Descripcion: 'Monitoreo de red en tiempo real', Fecha_Integracion: '2024-01-15', Activa: 1 },
     { ID_Integracion: 2, Herramienta: 'Snort', Descripcion: 'Sistema de detección de intrusos', Fecha_Integracion: '2024-02-20', Activa: 0 },
-    { ID_Integracion: 3, Herramienta: 'Snort', Descripcion: 'Análisis de registros y visualización de datos', Fecha_Integracion: '2024-03-12', Activa: 1 },
+    { ID_Integracion: 3, Herramienta: 'Graylog', Descripcion: 'Análisis de registros y visualización de datos', Fecha_Integracion: '2024-03-12', Activa: 1 },
     { ID_Integracion: 4, Herramienta: 'Zeek', Descripcion: 'Monitoreo de sistemas y redes', Fecha_Integracion: '2024-04-18', Activa: 1 },
   ], []);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterActive, setFilterActive] = useState('');
 
-  // Filtrar los datos según el término de búsqueda y el filtro de actividad
   const filteredData = useMemo(() => {
     return tableData.filter(row =>
-      row.Herramienta.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (filterActive === '' || row.Activa === parseInt(filterActive))
+      (row.Herramienta.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       row.Descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       row.Fecha_Integracion.includes(searchTerm)) &&
+      (filterActive === '' || row.Activa.toString() === filterActive)
     );
   }, [searchTerm, filterActive, tableData]);
 
@@ -38,7 +37,6 @@ function Integraciones() {
     prepareRow,
   } = useTable({ columns, data: filteredData }, useSortBy);
 
-  // Función para exportar los datos a CSV
   const exportCSV = () => {
     const csvRows = [
       ['ID Integración', 'Herramienta', 'Descripción', 'Fecha de Integración', 'Activa'],

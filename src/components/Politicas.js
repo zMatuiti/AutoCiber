@@ -56,6 +56,7 @@ function Politicas() {
   const data = useMemo(() => politicas, [politicas]);
 
   const columns = useMemo(() => [
+    { Header: 'ID Política', accessor: 'ID_politica' },
     { Header: 'Nombre', accessor: 'Nombre' },
     { Header: 'Descripción', accessor: 'Descripcion' },
     { Header: 'Tipo', accessor: 'Tipo' },

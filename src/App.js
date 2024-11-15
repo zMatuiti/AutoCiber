@@ -9,16 +9,20 @@ import Usuarios from './components/Usuarios';
 import Incidentes from './components/Incidentes';
 import Politicas from './components/Politicas';
 import Integraciones from './components/Integraciones';
-import Layout from './components/Layout'; 
+import Layout from './components/Layout';
+import Dispositivos from './components/Dispositivos' 
 
 function App() {
-  const isAuthenticated = true; // Cambia esto con la lógica real de autenticación
+  const isAuthenticated = true; 
 
   return (
     <Router>
       <Routes>
         {/* Ruta de Login */}
-        <Route path="/" element={<Login />} />
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
+        />
 
         {/* Rutas protegidas dentro del Layout */}
         {isAuthenticated ? (
@@ -28,6 +32,7 @@ function App() {
             <Route path="/reportes" element={<Reportes />} />
             <Route path="/vulnerabilidades" element={<Vulnerabilidades />} />
             <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/dispositivos" element={<Dispositivos />} />
             <Route path="/incidentes" element={<Incidentes />} />
             <Route path="/politicas" element={<Politicas />} />
             <Route path="/integraciones" element={<Integraciones />} />
