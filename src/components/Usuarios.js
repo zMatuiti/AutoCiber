@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function Usuarios() {
-  const [datosUsuario, setDatosUsuario] = useState([
-    { id: 1, nombre: 'Juan Pérez', rol: 'Administrador', email: 'juan@example.com', fecha: '2023-08-10' },
-    { id: 2, nombre: 'Ana Gómez', rol: 'Analista', email: 'ana@example.com', fecha: '2024-01-15' },
-  ]);
-
+  const [datosUsuario, setDatosUsuario] = useState([]); // Estado para usuarios desde la base de datos
   const [nuevoUsuario, setNuevoUsuario] = useState({
     nombre: '',
     rol: '',
@@ -16,16 +13,44 @@ function Usuarios() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const agregarUsuario = () => {
+  // Función para cargar usuarios desde la API
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/usuarios');
+        console.log('Datos recibidos del backend:', response.data); // Agrega este log
+        const usuariosMapeados = response.data.map((usuario) => ({
+          id: usuario.ID_usuario,
+          nombre: usuario.Nombre,
+          rol: usuario.Rol,
+          email: usuario.Email,
+          fecha: usuario.Fecha_creacion,
+        }));
+        console.log('Usuarios mapeados:', usuariosMapeados); // Verifica el mapeo
+        setDatosUsuario(usuariosMapeados);
+      } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+      }
+    };
+  
+    fetchUsuarios();
+  }, []);
+
+  // Función para agregar un usuario
+  const agregarUsuario = async () => {
     if (!nuevoUsuario.nombre || !nuevoUsuario.rol || !nuevoUsuario.email || !nuevoUsuario.fecha || !nuevoUsuario.password) {
       alert('Por favor, completa todos los campos.');
       return;
     }
 
-    const nuevoId = datosUsuario.length + 1;
-    setDatosUsuario([...datosUsuario, { id: nuevoId, ...nuevoUsuario }]);
-    setNuevoUsuario({ nombre: '', rol: '', email: '', fecha: '', password: '' });
-    setIsModalOpen(false); // Cerrar la ventana modal
+    try {
+      const response = await axios.post('http://localhost:5000/api/usuarios', nuevoUsuario);
+      setDatosUsuario([...datosUsuario, { id: response.data.id, ...nuevoUsuario }]);
+      setNuevoUsuario({ nombre: '', rol: '', email: '', fecha: '', password: '' });
+      setIsModalOpen(false); // Cerrar la ventana modal
+    } catch (error) {
+      console.error('Error al agregar usuario:', error);
+    }
   };
 
   return (

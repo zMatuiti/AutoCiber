@@ -1,10 +1,11 @@
-const mysql = require('mysql2/promise');
+const sqlite3 = require('sqlite3').verbose();
 
-const db = mysql.createPool({
-  host: 'localhost', // Cambia según tu configuración
-  user: 'root',      // Cambia según tu configuración
-  password: 'password', // Cambia según tu configuración
-  database: 'tu_base_de_datos', // Cambia por el nombre de tu base de datos
+const db = new sqlite3.Database('./database', (err) => {
+  if (err) {
+    console.error('Error al conectar con la base de datos:', err.message);
+  } else {
+    console.log('Conectado a la base de datos SQLite.');
+  }
 });
 
 module.exports = db;

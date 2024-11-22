@@ -1,16 +1,41 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // Estado para manejar mensajes de error
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username && password) {
-      navigate('/dashboard');
-    } else {
-      alert('Por favor, ingrese usuario y contraseña');
+  const handleLogin = async () => {
+    setError(''); // Limpiar errores anteriores
+
+    if (!username || !password) {
+      setError('Por favor, ingrese usuario y contraseña');
+      return;
+    }
+
+    try {
+      // Enviar credenciales al backend
+      const response = await axios.post('http://localhost:5000/api/login', {
+        email: username,
+        password,
+      });
+
+      if (response.data.success) {
+        // Redirigir al dashboard si el login es exitoso
+        navigate('/dashboard');
+      } else {
+        setError('Usuario o contraseña incorrectos');
+      }
+    } catch (err) {
+      // Manejar errores
+      if (err.response && err.response.status === 401) {
+        setError('Usuario o contraseña incorrectos');
+      } else {
+        setError('Error del servidor. Intente nuevamente más tarde.');
+      }
     }
   };
 
@@ -20,23 +45,26 @@ function Login() {
         <h2 style={styles.title}>Automatic Intrusion Detection System</h2>
         <div style={styles.formContainer}>
           <div style={styles.form}>
+            {error && <p style={styles.error}>{error}</p>}
             <label style={styles.label}>Usuario</label>
-            <input 
-              type="text" 
-              style={styles.input} 
-              placeholder="Ingrese su usuario" 
+            <input
+              type="text"
+              style={styles.input}
+              placeholder="Ingrese su usuario"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
             <label style={styles.label}>Contraseña</label>
-            <input 
-              type="password" 
-              style={styles.input} 
-              placeholder="Ingrese su contraseña" 
+            <input
+              type="password"
+              style={styles.input}
+              placeholder="Ingrese su contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button style={styles.button} onClick={handleLogin}>Entrar</button>
+            <button style={styles.button} onClick={handleLogin}>
+              Entrar
+            </button>
           </div>
         </div>
       </div>
@@ -75,10 +103,9 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
   },
-  icon: {
-    width: '100px',
-    height: '100px',
-    margin: '10px',
+  error: {
+    color: 'red',
+    marginBottom: '10px',
   },
   label: {
     marginBottom: '5px',

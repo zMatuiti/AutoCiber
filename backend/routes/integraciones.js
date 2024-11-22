@@ -1,16 +1,10 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../db'); // Importa la configuración de la base de datos
-
-// Endpoint para obtener integraciones
-router.get('/api/integraciones', async (req, res) => {
-  try {
-    const [rows] = await db.execute('SELECT * FROM Integracion');
-    res.json(rows);
-  } catch (error) {
-    console.error('Error al obtener integraciones:', error);
-    res.status(500).send('Error al obtener integraciones');
-  }
+router.get('/api/integraciones', (req, res) => {
+  db.all('SELECT * FROM Integracion', [], (err, rows) => {
+    if (err) {
+      console.error('Error al obtener integraciones:', err.message);
+      res.status(500).send('Error al obtener integraciones');
+    } else {
+      res.json(rows);
+    }
+  });
 });
-
-module.exports = router;

@@ -1,18 +1,22 @@
 const express = require('express');
-const integracionesRouter = require('./routes/integraciones');
-const cors = require('cors');
+const bodyParser = require('body-parser');
+const cors = require('cors'); // Importa CORS al inicio
+const usuariosRouter = require('./routes/usuarios');
+const loginRouter = require('./routes/login');
 
 const app = express();
-const PORT = 5000; // Cambia el puerto si es necesario
+const PORT = 5000;
 
-// Middleware
 app.use(cors());
-app.use(express.json());
+
+// Configura body-parser para solicitudes JSON
+app.use(bodyParser.json());
 
 // Rutas
-app.use(integracionesRouter);
+app.use(usuariosRouter);
+app.use(loginRouter);
 
-// Servidor escuchando
+// Inicia el servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
