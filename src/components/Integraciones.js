@@ -1,16 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 import { useTable, useSortBy } from 'react-table';
 
 function Integraciones() {
-  const tableData = useMemo(() => [
-    { ID_Integracion: 1, Herramienta: 'Zeek', Descripcion: 'Monitoreo de red en tiempo real', Fecha_Integracion: '2024-01-15', Activa: 1 },
-    { ID_Integracion: 2, Herramienta: 'Snort', Descripcion: 'Sistema de detección de intrusos', Fecha_Integracion: '2024-02-20', Activa: 0 },
-    { ID_Integracion: 3, Herramienta: 'Graylog', Descripcion: 'Análisis de registros y visualización de datos', Fecha_Integracion: '2024-03-12', Activa: 1 },
-    { ID_Integracion: 4, Herramienta: 'Zeek', Descripcion: 'Monitoreo de sistemas y redes', Fecha_Integracion: '2024-04-18', Activa: 1 },
-  ], []);
-
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterActive, setFilterActive] = useState('');
+  const [loading, setLoading] = useState(true); // Estado para manejar el cargando
+  const [error, setError] = useState(null); // Estado para manejar errores
+
+  // Fetch data from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('/api/integraciones'); // Ajusta la URL si el backend está en otro puerto o dominio
+        setTableData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener integraciones:', error);
+        setError('No se pudieron cargar las integraciones. Por favor, inténtalo más tarde.');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const filteredData = useMemo(() => {
     return tableData.filter(row =>
@@ -58,11 +72,18 @@ function Integraciones() {
     link.click();
   };
 
+  if (loading) {
+    return <div>Cargando datos...</div>;
+  }
+
+  if (error) {
+    return <div style={{ color: 'red' }}>{error}</div>;
+  }
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Integraciones</h1>
 
-      {/* Barra de búsqueda y filtros */}
       <div style={styles.filterContainer}>
         <input
           type="text"
@@ -83,7 +104,6 @@ function Integraciones() {
         <button onClick={exportCSV} style={styles.exportButton}>Exportar CSV</button>
       </div>
 
-      {/* Tabla de datos */}
       <table {...getTableProps()} style={styles.table}>
         <thead>
           {headerGroups.map(headerGroup => (

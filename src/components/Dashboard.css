@@ -9,6 +9,7 @@
 .dash_title {
     font-size: 32px;
     font-weight: bold;
+    margin-top: 0px;
     margin-bottom: 20px;
     text-align: left;
     color: #333;

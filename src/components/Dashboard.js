@@ -94,12 +94,10 @@ function Dashboard() {
         <div className="card">
           <h2>Reportes</h2>
           <p className="card-value">{reportCount}</p>
-          <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
         </div>
         <div className="card">
           <h2>Posibles Ataques</h2>
           <p className="card-value">{attackCount}</p>
-          <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
         </div>
         <div className="card">
           <h2>Vulnerabilidades</h2>
@@ -140,7 +138,7 @@ function Dashboard() {
         </div>
 
         <div className="chart-container pie-chart-container">
-          <h2>Nivel de Riesgo</h2> {/* Título alineado según el CSS */}
+          <h2>Nivel de Riesgo</h2>
           <div className="pie-chart-wrapper">
             <div style={{ width: '250px', height: '250px' }}>
               <Pie data={pieData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
@@ -169,29 +167,6 @@ function Dashboard() {
               <th>Estado</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>2024-01-15</td>
-              <td>Ataque de red detectado</td>
-              <td>Alto</td>
-              <td>Pendiente</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>2024-02-10</td>
-              <td>Inyección SQL</td>
-              <td>Crítico</td>
-              <td>Resuelto</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>2024-03-05</td>
-              <td>Intento de acceso no autorizado</td>
-              <td>Moderado</td>
-              <td>En Proceso</td>
-            </tr>
-          </tbody>
         </table>
       </div>
     </div>
