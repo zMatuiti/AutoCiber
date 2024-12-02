@@ -13,7 +13,7 @@ function Integraciones() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/integraciones'); // Ajusta la URL si el backend está en otro puerto o dominio
+        const response = await axios.get('http://localhost:5000/api/integraciones'); // Ajusta la URL si el backend está en otro puerto o dominio
         setTableData(response.data);
         setLoading(false);
       } catch (error) {

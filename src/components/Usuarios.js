@@ -32,26 +32,37 @@ function Usuarios() {
         console.error('Error al cargar usuarios:', error);
       }
     };
-  
+
     fetchUsuarios();
   }, []);
 
   // Función para agregar un usuario
+  const [error, setError] = useState('');
+
   const agregarUsuario = async () => {
     if (!nuevoUsuario.nombre || !nuevoUsuario.rol || !nuevoUsuario.email || !nuevoUsuario.fecha || !nuevoUsuario.password) {
-      alert('Por favor, completa todos los campos.');
+      setError('Por favor, completa todos los campos.');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/usuarios', nuevoUsuario);
-      setDatosUsuario([...datosUsuario, { id: response.data.id, ...nuevoUsuario }]);
+      const response = await axios.post('http://localhost:5000/api/usuarios', {
+        Nombre: nuevoUsuario.nombre,
+        Rol: nuevoUsuario.rol,
+        Email: nuevoUsuario.email,
+        Pass: nuevoUsuario.password,
+        Fecha_creacion: nuevoUsuario.fecha,
+      });
+      setDatosUsuario([...datosUsuario, { id: response.data.ID_usuario, ...nuevoUsuario }]);
       setNuevoUsuario({ nombre: '', rol: '', email: '', fecha: '', password: '' });
-      setIsModalOpen(false); // Cerrar la ventana modal
+      setError(''); // Limpiar errores
+      setIsModalOpen(false);
     } catch (error) {
       console.error('Error al agregar usuario:', error);
+      setError('No se pudo agregar el usuario. Intenta nuevamente.');
     }
   };
+
 
   return (
     <div style={styles.container}>

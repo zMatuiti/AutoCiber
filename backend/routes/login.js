@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // Conexión a la base de datos
+const db = require('../data-base/db'); // Conexión a la base de datos
 
 // Endpoint para manejar el login
 router.post('/api/login', (req, res) => {
