@@ -9,7 +9,7 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setError(''); // Limpiar errores anteriores
+    setError('');
 
     if (!username || !password) {
       setError('Por favor, ingrese usuario y contraseña');
