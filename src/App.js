@@ -13,7 +13,7 @@ import Layout from './components/Layout';
 import Dispositivos from './components/Dispositivos';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const handleLogout = () => {
     // Al cerrar sesión, se actualiza el estado

@@ -6,7 +6,7 @@ const db = require('../data-base/db'); // Conexión a la base de datos
 const saltRounds = 10; // Nivel de encriptación
 
 // Obtener todos los usuarios
-router.get('/usuarios', (req, res) => {
+router.get('/', (req, res) => {
   db.all('SELECT ID_usuario, Nombre, Rol, Email, Fecha_creacion FROM Usuario', [], (err, rows) => {
     if (err) {
       console.error('Error al obtener usuarios:', err.message);
@@ -18,11 +18,11 @@ router.get('/usuarios', (req, res) => {
 });
 
 // Agregar un nuevo usuario
-router.post('/api/usuarios', async (req, res) => {
-  const { Nombre, Rol, Email, Pass, Fecha_creacion } = req.body;
+router.post('/', async (req, res) => {
+  const { Nombre, Rol, Email, Pw, Fecha_creacion } = req.body;
 
   // Validación de campos requeridos
-  if (!Nombre || !Rol || !Email || !Pass || !Fecha_creacion) {
+  if (!Nombre || !Rol || !Email || !Pw || !Fecha_creacion) {
     return res.status(400).json({ success: false, message: 'Por favor, completa todos los campos.' });
   }
 
@@ -44,14 +44,14 @@ router.post('/api/usuarios', async (req, res) => {
 
     try {
       // Encriptar contraseña
-      const hashedPassword = await bcrypt.hash(Pass, saltRounds);
+      const hashedPwword = await bcrypt.hash(Pw, saltRounds);
 
       const query = `
-        INSERT INTO Usuario (Nombre, Rol, Email, Pass, Fecha_creacion) 
+        INSERT INTO Usuario (Nombre, Rol, Email, Pw, Fecha_creacion) 
         VALUES (?, ?, ?, ?, ?)
       `;
 
-      db.run(query, [Nombre, Rol, Email, hashedPassword, Fecha_creacion], function (err) {
+      db.run(query, [Nombre, Rol, Email, hashedPwword, Fecha_creacion], function (err) {
         if (err) {
           console.error('Error al agregar usuario:', err.message);
           return res.status(500).json({ success: false, message: 'Error al agregar usuario.' });
@@ -65,4 +65,46 @@ router.post('/api/usuarios', async (req, res) => {
   });
 });
 
+// Eliminar un usuario
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+
+  const query = 'SELECT Rol FROM Usuario WHERE ID_usuario = ?';
+  db.get(query, [id], (err, row) => {
+    if (err) {
+      return res.status(500).json({ success: false, message: 'Error al buscar usuario' });
+    }
+
+    if (!row) {
+      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    if (row.Rol === 'administrador') {
+      return res.status(403).json({ success: false, message: 'No se puede eliminar al administrador' });
+    }
+
+    // Eliminar el usuario
+    const deleteQuery = 'DELETE FROM Usuario WHERE ID_usuario = ?';
+    db.run(deleteQuery, [id], function (err) {
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Error al eliminar usuario' });
+      }
+
+      res.json({ success: true, message: 'Usuario eliminado correctamente' });
+    });
+  });
+});
+
+
+// Endpoint para obtener todos los roles
+router.get('/api/roles', (req, res) => {
+  db.all('SELECT Rol FROM Rol_Usuario', [], (err, rows) => {
+    if (err) {
+      console.error('Error al obtener roles:', err.message);
+      res.status(500).json({ success: false, message: 'Error al obtener roles.' });
+    } else {
+      res.json(rows.map(row => row.Rol)); // Devolver solo los nombres de los roles
+    }
+  });
+});
 module.exports = router;
