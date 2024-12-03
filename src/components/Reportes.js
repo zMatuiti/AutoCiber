@@ -1,30 +1,38 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
+import axios from 'axios';
 
 function Reportes() {
-  const tableData = useMemo(() => [
-    { id: 1, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Red', Detalles: 'SQL Injection detectado', Generado_Por: 'Juan Pérez', ID_Usuario: 1 },
-    { id: 2, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Aplicación', Detalles: 'XSS Vulnerabilidad', Generado_Por: 'Ana Gómez', ID_Usuario: 2 },
-    { id: 3, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Red', Detalles: 'Ataque de fuerza bruta', Generado_Por: 'Juan Pérez', ID_Usuario: 1 },
-    { id: 4, Fecha_Generacion: '2024-10-30', Tipo_Reporte: 'Análisis de Aplicación', Detalles: 'Buffer overflow detectado', Generado_Por: 'Ana Gómez', ID_Usuario: 2 },
-  ], []);
-  
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
 
+  // Cargar datos desde el backend
+  useEffect(() => {
+    const fetchReportes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/reportes'); // Cambia la URL según tu backend
+        setTableData(response.data);
+      } catch (error) {
+        console.error('Error al cargar reportes:', error);
+      }
+    };
 
+    fetchReportes();
+  }, []);
+
+  // Filtrar datos
   const filteredData = useMemo(() => {
     return tableData.filter(row =>
       (row.Detalles.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       row.Generado_Por.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       row.Fecha_Generacion.includes(searchTerm)) &&
+        row.Generado_Por.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.Fecha_Generacion.includes(searchTerm)) &&
       (!filterCategory || row.Tipo_Reporte === filterCategory)
     );
   }, [searchTerm, filterCategory, tableData]);
-  
 
   const columns = useMemo(() => [
-    { Header: 'ID Reporte', accessor: 'id' },
+    { Header: 'ID Reporte', accessor: 'ID_Reporte' },
     { Header: 'Fecha de Generación', accessor: 'Fecha_Generacion' },
     { Header: 'Tipo de Reporte', accessor: 'Tipo_Reporte' },
     { Header: 'Detalles', accessor: 'Detalles' },
@@ -44,7 +52,7 @@ function Reportes() {
     const csvRows = [
       ['ID Reporte', 'Fecha de Generación', 'Tipo de Reporte', 'Detalles', 'Generado Por', 'ID Usuario'],
       ...filteredData.map(row => [
-        row.id,
+        row.ID_Reporte,
         row.Fecha_Generacion,
         row.Tipo_Reporte,
         `"${row.Detalles}"`,

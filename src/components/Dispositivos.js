@@ -1,21 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function Dispositivos() {
-  const datosDispositivo = [
-    { id: 1, tipo: 'Servidor', ip: '192.168.1.10', estado: 'Operativo', ubicacion: 'Sala de servidores' },
-    { id: 2, tipo: 'Router', ip: '192.168.1.1', estado: 'Operativo', ubicacion: 'Oficina principal' },
-  ];
+  const [datosDispositivo, setDatosDispositivo] = useState([]);
+
+  useEffect(() => {
+    const fetchDispositivos = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/dispositivos');
+        setDatosDispositivo(response.data);
+      } catch (error) {
+        console.error('Error al obtener dispositivos:', error);
+      }
+    };
+
+    fetchDispositivos();
+  }, []);
 
   return (
     <div style={styles.container}>
       <h2>Dispositivos</h2>
       <div style={styles.grid}>
         {datosDispositivo.map((dispositivo) => (
-          <div key={dispositivo.id} style={styles.card}>
-            <h3>{dispositivo.tipo}</h3>
-            <p><strong>IP:</strong> {dispositivo.ip}</p>
-            <p><strong>Estado:</strong> {dispositivo.estado}</p>
-            <p><strong>Ubicación:</strong> {dispositivo.ubicacion}</p>
+          <div key={dispositivo.ID_dispositivo} style={styles.card}>
+            <h3>{dispositivo.ID_tipo_dispositivo}</h3>
+            <p><strong>IP:</strong> {dispositivo.IP}</p>
+            <p><strong>Estado:</strong> {dispositivo.Estado}</p>
+            <p><strong>Ubicación:</strong> {dispositivo.Ubicacion}</p>
           </div>
         ))}
       </div>

@@ -1,21 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
+import axios from 'axios';
 
 function Incidentes() {
-  const [incidentes, setIncidentes] = useState([
-    {
-      ID_Incidente: 1,
-      Fecha_Inicio: '2024-01-01',
-      Fecha_Fin: '2024-01-02',
-      Descripcion: 'Acceso no autorizado detectado',
-      Estado: 'En Proceso',
-      Accion_Tomada: 'Monitoreo del dispositivo afectado',
-      ID_Amenaza: 101,
-      ID_Dispositivo: 202,
-      ID_Usuario: 303,
-    },
-  ]);
-
+  const [incidentes, setIncidentes] = useState([]);
   const [nuevoIncidente, setNuevoIncidente] = useState({
     Fecha_Inicio: '',
     Fecha_Fin: '',
@@ -24,30 +12,48 @@ function Incidentes() {
     Accion_Tomada: '',
   });
 
-  const agregarIncidente = () => {
+  useEffect(() => {
+    const fetchIncidentes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/incidentes'); // Ajusta la URL si es necesario
+        setIncidentes(response.data);
+      } catch (error) {
+        console.error('Error al obtener incidentes:', error);
+      }
+    };
+
+    fetchIncidentes();
+  }, []);
+
+  const agregarIncidente = async () => {
     if (!nuevoIncidente.Fecha_Inicio || !nuevoIncidente.Descripcion || !nuevoIncidente.Estado) {
       alert('Por favor, complete los campos obligatorios: Fecha de Inicio, Descripción y Estado.');
       return;
     }
 
-    const nuevoID = incidentes.length + 1;
-    setIncidentes([
-      ...incidentes,
-      { ID_Incidente: nuevoID, ...nuevoIncidente },
-    ]);
-
-    setNuevoIncidente({
-      Fecha_Inicio: '',
-      Fecha_Fin: '',
-      Descripcion: '',
-      Estado: '',
-      Accion_Tomada: '',
-    });
+    try {
+      const response = await axios.post('http://localhost:5000/api/incidentes', nuevoIncidente); // Ajusta la URL si es necesario
+      setIncidentes([...incidentes, { ID_Incidente: response.data.ID_Incidente, ...nuevoIncidente }]);
+      setNuevoIncidente({
+        Fecha_Inicio: '',
+        Fecha_Fin: '',
+        Descripcion: '',
+        Estado: '',
+        Accion_Tomada: '',
+      });
+    } catch (error) {
+      console.error('Error al agregar incidente:', error);
+    }
   };
 
-  const eliminarIncidente = (id) => {
+  const eliminarIncidente = async (id) => {
     if (window.confirm("¿Estás seguro de que deseas eliminar este incidente?")) {
-      setIncidentes(incidentes.filter((incidente) => incidente.ID_Incidente !== id));
+      try {
+        await axios.delete(`http://localhost:5000/api/incidentes/${id}`); // Ajusta la URL si es necesario
+        setIncidentes(incidentes.filter((incidente) => incidente.ID_Incidente !== id));
+      } catch (error) {
+        console.error('Error al eliminar incidente:', error);
+      }
     }
   };
 
