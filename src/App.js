@@ -13,11 +13,15 @@ import Layout from './components/Layout';
 import Dispositivos from './components/Dispositivos';
 
 function App() {
-  // Controla si el usuario está autenticado
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogout = () => {
+    // Al cerrar sesión, se actualiza el estado
+    setIsAuthenticated(false);
+  };
 
   return (
-    <BrowserRouter future={{ v7_relativeSplatPath: true }}> {/* Aquí se incluye el flag */}
+    <BrowserRouter>
       <Routes>
         {/* Ruta de Login */}
         <Route
@@ -35,7 +39,7 @@ function App() {
         <Route
           path="/"
           element={
-            isAuthenticated ? <Layout /> : <Navigate to="/login" replace />
+            isAuthenticated ? <Layout onLogout={handleLogout} /> : <Navigate to="/login" replace />
           }
         >
           <Route path="dashboard" element={<Dashboard />} />

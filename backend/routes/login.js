@@ -9,14 +9,19 @@ router.post('/', (req, res) => {
     return res.status(400).json({ success: false, message: 'Por favor, completa todos los campos.' });
   }
 
-  // Consulta SQL
   const query = 'SELECT * FROM Usuario WHERE Email = ? AND Pw = ?';
   db.get(query, [email, password], (err, row) => {
     if (err) {
       console.error('Error al autenticar usuario:', err.message);
       res.status(500).json({ success: false, message: 'Error del servidor' });
     } else if (row) {
-      res.json({ success: true, message: 'Login exitoso', user: row });
+      // Devuelve un token ficticio
+      res.json({
+        success: true,
+        message: 'Login exitoso',
+        user: row,
+        token: 'sample-auth-token',
+      });
     } else {
       res.status(401).json({ success: false, message: 'Usuario o contraseña incorrectos' });
     }

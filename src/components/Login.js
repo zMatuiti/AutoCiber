@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function Login() {
+function Login({ setIsAuthenticated }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Estado para manejar mensajes de error
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -24,10 +24,10 @@ function Login() {
       });
 
       if (response.data.success) {
-        // Almacenar información del usuario (opcional)
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Actualizar el estado de autenticación
+        setIsAuthenticated(true);
 
-        // Redirigir al dashboard si el login es exitoso
+        // Redirigir al dashboard
         navigate('/dashboard');
       } else {
         setError('Usuario o contraseña incorrectos');
