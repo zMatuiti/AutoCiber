@@ -253,17 +253,18 @@ const styles = {
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Fondo más oscuro
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
     backgroundColor: '#fff',
-    padding: '50px',
-    borderRadius: '10px',
+    padding: '30px', // Reduce el padding
+    borderRadius: '15px', // Bordes más redondeados
     width: '400px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    maxWidth: '90%', // Adaptable a pantallas pequeñas
+    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)', // Sombra más pronunciada
     textAlign: 'center',
   },
   input: {
@@ -283,21 +284,25 @@ const styles = {
     marginRight: '10px',
   },
   cancelButton: {
-    padding: '10px 20px',
-    backgroundColor: '#white',
-    color: '#black',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  deleteConfirmButton: {
-    padding: '10px 20px',
-    backgroundColor: 'red',
+    padding: '10px 25px',
+    backgroundColor: '#6c757d',
     color: '#fff',
     border: 'none',
-    borderRadius: '5px',
+    borderRadius: '8px', 
     cursor: 'pointer',
-    marginRight: '10px',
+    fontSize: '16px', 
+    transition: 'background-color 0.3s ease', 
+  },
+  deleteConfirmButton: {
+    padding: '10px 25px',
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '8px', 
+    cursor: 'pointer',
+    fontSize: '16px', 
+    marginRight: '15px', 
+    transition: 'background-color 0.3s ease', 
   },
 };
 

@@ -10,6 +10,7 @@ const dispositivosRouter = require('./routes/dispositivos');
 const politicasRouter = require('./routes/politicas');
 const reportesRouter = require('./routes/reportes');
 const rolesRouter = require('./routes/roles'); 
+const tipoPoliticaRouter = require('./routes/tipo-politica');
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.use('/api/dispositivos', dispositivosRouter);
 app.use('/api/politicas', politicasRouter);
 app.use('/api/reportes', reportesRouter);
 app.use('/api/roles', rolesRouter); 
+app.use('/api/tipo-politica', tipoPoliticaRouter);
+
 
 app.get('/', (req, res) => {
   res.json({ message: 'Servidor corriendo correctamente' });

@@ -8,7 +8,7 @@ router.get('/', (req, res) => {
       console.error('Error al obtener roles:', err.message);
       res.status(500).json({ success: false, message: 'Error al obtener roles.' });
     } else {
-      res.json(rows.map((row) => row.Rol)); // Devolver solo los nombres de los roles
+      res.json(rows.map((row) => row.Rol));
     }
   });
 });
