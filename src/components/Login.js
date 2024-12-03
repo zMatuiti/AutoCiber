@@ -24,17 +24,27 @@ function Login() {
       });
 
       if (response.data.success) {
+        // Almacenar información del usuario (opcional)
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
         // Redirigir al dashboard si el login es exitoso
         navigate('/dashboard');
       } else {
         setError('Usuario o contraseña incorrectos');
       }
     } catch (err) {
-      // Manejar errores
-      if (err.response && err.response.status === 401) {
-        setError('Usuario o contraseña incorrectos');
+      console.error('Error durante el login:', err);
+
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError('Usuario o contraseña incorrectos');
+        } else if (err.response.status === 400) {
+          setError('Por favor, completa todos los campos.');
+        } else {
+          setError('Error del servidor. Intente nuevamente más tarde.');
+        }
       } else {
-        setError('Error del servidor. Intente nuevamente más tarde.');
+        setError('No se pudo conectar al servidor. Verifica tu conexión.');
       }
     }
   };
@@ -42,7 +52,7 @@ function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.loginBox}>
-        <h2 style={styles.title}>Automatic Intrusion Detection System</h2>
+        <h2 style={styles.title}>Sistema de Seguridad</h2>
         <div style={styles.formContainer}>
           <div style={styles.form}>
             {error && <p style={styles.error}>{error}</p>}
