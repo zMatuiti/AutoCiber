@@ -257,14 +257,12 @@ const styles = {
   formContainer: { display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' },
   input: { padding: '10px', borderRadius: '5px', border: '1px solid #ddd', width: '100%' },
   addButton: {
-    padding: '10px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    width: '150px',
-    alignSelf: 'center',
+    padding: '10px', 
+    backgroundColor: '#007bff', 
+    color: '#fff', 
+    border: 'none', 
+    borderRadius: '5px', 
+    cursor: 'pointer' 
   },
   table: {
     width: '100%',

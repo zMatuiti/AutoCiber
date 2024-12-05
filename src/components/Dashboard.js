@@ -1,55 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Line, Pie } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useTable, useSortBy } from 'react-table';
 import './Dashboard.css';
 import axios from 'axios';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
 function Dashboard() {
-  const [reportCount, setReportCount] = useState(0);
-  const [attackCount, setAttackCount] = useState(0);
-  const [vulnerabilityProgress, setVulnerabilityProgress] = useState(0);
-  const [incidentDetails, setIncidentDetails] = useState([]);
-  const [lineData, setLineData] = useState(null);
-  const [pieData, setPieData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [reportCount, setReportCount] = useState(0); // Contador de reportes
+  const [reportDetails, setReportDetails] = useState([]); // Detalles de reportes
+  const [incidentDetails, setIncidentDetails] = useState([]); // Detalles de incidentes
+  const [activePolicies, setActivePolicies] = useState([]); // Políticas activas
+  const [loading, setLoading] = useState(true); // Estado de carga
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const responseStats = await axios.get('http://localhost:5000/api/dashboard-stats');
-      setReportCount(responseStats.data.reportCount);
-      setAttackCount(responseStats.data.attackCount);
-      setVulnerabilityProgress(responseStats.data.vulnerabilityProgress);
+      const responsePolicies = await axios.get('http://localhost:5000/api/politicas');
+      const activePolicies = responsePolicies.data.filter((policy) => policy.Activa === 1);
+      setActivePolicies(activePolicies);
+
+      const responseReports = await axios.get('http://localhost:5000/api/reportes');
+      setReportCount(responseReports.data.length || 0);
+      setReportDetails(responseReports.data);
 
       const responseIncidents = await axios.get('http://localhost:5000/api/incidentes');
       setIncidentDetails(responseIncidents.data);
-
-      const responseCharts = await axios.get('http://localhost:5000/api/dashboard-charts');
-      setLineData(responseCharts.data.lineData || null);
-      setPieData(responseCharts.data.pieData || null);
     } catch (error) {
       console.error('Error al cargar datos:', error);
     } finally {
@@ -61,16 +34,72 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  const lineOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: 'top' },
-      title: { display: true, text: 'Actividad de Reportes' },
-    },
-    scales: {
-      x: { title: { display: true, text: 'Meses' } },
-      y: { title: { display: true, text: 'Cantidad' } },
-    },
+  // Configuración de las tablas para react-table
+  const policyColumns = useMemo(
+    () => [
+      { Header: 'Nombre', accessor: 'Nombre' },
+      { Header: 'Descripcion', accessor: 'Descripcion' },
+      { Header: 'Fecha', accessor: 'Fecha_implementacion' },
+    ],
+    []
+  );
+
+  const reportColumns = useMemo(
+    () => [
+      { Header: 'ID', accessor: 'ID_Reporte' },
+      { Header: 'Fecha', accessor: 'Fecha_Generacion' },
+      { Header: 'Tipo', accessor: 'Tipo_Reporte' },
+      { Header: 'Detalles', accessor: 'Detalles' },
+      { Header: 'Generado Por', accessor: 'Generado_Por' },
+    ],
+    []
+  );
+
+  const incidentColumns = useMemo(
+    () => [
+      { Header: 'Descripción', accessor: 'Descripcion' },
+      { Header: 'Estado', accessor: 'Estado' },
+    ],
+    []
+  );
+
+  const policyTable = useTable({ columns: policyColumns, data: activePolicies }, useSortBy);
+  const reportTable = useTable({ columns: reportColumns, data: reportDetails }, useSortBy);
+  const incidentTable = useTable({ columns: incidentColumns, data: incidentDetails }, useSortBy);
+
+  const renderTable = (tableInstance) => {
+    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
+
+    return (
+      <table {...getTableProps()} className="data-table">
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                  </span>
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => (
+                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    );
   };
 
   return (
@@ -88,78 +117,21 @@ function Dashboard() {
               <h2>Reportes</h2>
               <p className="card-value">{reportCount}</p>
             </div>
-            <div className="card">
-              <h2>Posibles Ataques</h2>
-              <p className="card-value">{attackCount}</p>
-            </div>
-            <div className="card">
-              <h2>Vulnerabilidades</h2>
-              <CircularProgressbar
-                value={vulnerabilityProgress}
-                text={`${vulnerabilityProgress}%`}
-                styles={buildStyles({
-                  textSize: '16px',
-                  pathColor: 'green',
-                  textColor: 'black',
-                  trailColor: '#d6d6d6',
-                })}
-              />
-            </div>
           </div>
 
-          <div className="chart-row">
-            {lineData && lineData.labels ? (
-              <div className="chart-container">
-                <Line options={lineOptions} data={lineData} />
-              </div>
-            ) : (
-              <p>No hay datos para el gráfico de línea.</p>
-            )}
-            {pieData && pieData.labels ? (
-              <div className="chart-container">
-                <Pie
-                  data={pieData}
-                  options={{
-                    plugins: {
-                      legend: { position: 'right' },
-                      title: { display: true, text: 'Distribución de Amenazas' },
-                    },
-                  }}
-                />
-              </div>
-            ) : (
-              <p>No hay datos para el gráfico de pastel.</p>
-            )}
+          <div className="data-table">
+            <h2>Políticas de Seguridad Activas</h2>
+            {renderTable(policyTable)}
+          </div>
+
+          <div className="data-table">
+            <h2>Detalles de Reportes</h2>
+            {renderTable(reportTable)}
           </div>
 
           <div className="data-table">
             <h2>Incidentes Recientes</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Descripción</th>
-                  <th>Estado</th>
-                  <th>Usuario</th>
-                </tr>
-              </thead>
-              <tbody>
-                {incidentDetails.length > 0 ? (
-                  incidentDetails.map((incident) => (
-                    <tr key={incident.ID_Incidente}>
-                      <td>{incident.ID_Incidente}</td>
-                      <td>{incident.Descripcion}</td>
-                      <td>{incident.Estado}</td>
-                      <td>{incident.ID_Usuario}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4">No hay incidentes recientes.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            {renderTable(incidentTable)}
           </div>
         </>
       )}

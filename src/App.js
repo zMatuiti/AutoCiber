@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
@@ -14,11 +14,20 @@ import Dispositivos from './components/Dispositivos';
 import Amenazas from './components/Amenazas';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  // Leer el estado de autenticación desde localStorage al cargar la app
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+
+  // Guardar el estado en localStorage cuando cambie
+  useEffect(() => {
+    localStorage.setItem('isAuthenticated', isAuthenticated);
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
-    // Al cerrar sesión, se actualiza el estado
+    // Al cerrar sesión, se actualiza el estado y se elimina del localStorage
     setIsAuthenticated(false);
+    localStorage.removeItem('isAuthenticated');
   };
 
   return (

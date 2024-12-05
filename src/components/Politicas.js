@@ -251,7 +251,14 @@ const styles = {
   title: { fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' },
   formContainer: { display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' },
   input: { padding: '10px', borderRadius: '5px', border: '1px solid #ddd' },
-  addButton: { padding: '10px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' },
+  addButton: { 
+    padding: '10px', 
+    backgroundColor: '#007bff', 
+    color: '#fff', 
+    border: 'none', 
+    borderRadius: '5px', 
+    cursor: 'pointer' 
+  },
   table: { width: '100%', borderCollapse: 'collapse', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' },
   th: { padding: '12px 15px', backgroundColor: '#f4f4f4', borderBottom: '2px solid #ddd', textAlign: 'left', fontWeight: 'bold', cursor: 'pointer' },
   td: { padding: '12px 15px', borderBottom: '1px solid #ddd', backgroundColor: '#ffffff', textAlign: 'left' },

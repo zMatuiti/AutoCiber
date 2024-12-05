@@ -84,15 +84,6 @@ function Reportes() {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={styles.searchInput}
         />
-        <select
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-          style={styles.filterSelect}
-        >
-          <option value="">Filtrar por tipo de reporte</option>
-          <option value="Análisis de Red">Análisis de Red</option>
-          <option value="Análisis de Aplicación">Análisis de Aplicación</option>
-        </select>
         <button onClick={exportCSV} style={styles.exportButton}>Exportar CSV</button>
       </div>
 

@@ -8,7 +8,8 @@ function Login({ setIsAuthenticated }) {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Evitar recargar la página
     setError('');
 
     if (!username || !password) {
@@ -53,7 +54,7 @@ function Login({ setIsAuthenticated }) {
     <div style={styles.container}>
       <div style={styles.loginBox}>
         <h2 style={styles.title}>Sistema de Seguridad</h2>
-        <div style={styles.formContainer}>
+        <form style={styles.formContainer} onSubmit={handleLogin}>
           <div style={styles.form}>
             {error && <p style={styles.error}>{error}</p>}
             <label style={styles.label}>Usuario</label>
@@ -72,11 +73,11 @@ function Login({ setIsAuthenticated }) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button style={styles.button} onClick={handleLogin}>
+            <button type="submit" style={styles.button}>
               Entrar
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
