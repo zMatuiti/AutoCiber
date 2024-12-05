@@ -11,6 +11,7 @@ import Politicas from './components/Politicas';
 import Integraciones from './components/Integraciones';
 import Layout from './components/Layout';
 import Dispositivos from './components/Dispositivos';
+import Amenazas from './components/Amenazas';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -43,6 +44,7 @@ function App() {
           }
         >
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="amenazas" element={<Amenazas />} />
           <Route path="monitoreo" element={<Monitoreo />} />
           <Route path="reportes" element={<Reportes />} />
           <Route path="vulnerabilidades" element={<Vulnerabilidades />} />

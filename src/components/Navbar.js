@@ -36,12 +36,13 @@ function Navbar() {
         <Link to="/dashboard">Inicio</Link>
         <Link to="/monitoreo">Monitoreo en Tiempo Real</Link>
         <Link to="/vulnerabilidades">Vulnerabilidades</Link>
+        <Link to="/amenazas">Amenazas</Link>
         <Link to="/reportes">Reportes</Link>
-        <Link to="/usuarios">Usuarios</Link>
         <Link to="/incidentes">Incidentes</Link>
         <Link to="/politicas">Políticas</Link>
         <Link to="/dispositivos">Dispositivos</Link>
         <Link to="/integraciones">Integraciones</Link>
+        <Link to="/usuarios">Usuarios</Link>
       </div>
     </nav>
   );

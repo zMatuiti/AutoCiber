@@ -31,30 +31,29 @@ function Dashboard() {
   const [reportCount, setReportCount] = useState(0);
   const [attackCount, setAttackCount] = useState(0);
   const [vulnerabilityProgress, setVulnerabilityProgress] = useState(0);
-  const [otherProgress, setOtherProgress] = useState(0);
   const [incidentDetails, setIncidentDetails] = useState([]);
   const [lineData, setLineData] = useState(null);
   const [pieData, setPieData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      // Obtener datos generales para las tarjetas
       const responseStats = await axios.get('http://localhost:5000/api/dashboard-stats');
       setReportCount(responseStats.data.reportCount);
       setAttackCount(responseStats.data.attackCount);
       setVulnerabilityProgress(responseStats.data.vulnerabilityProgress);
-      setOtherProgress(responseStats.data.otherProgress);
 
-      // Obtener datos para la tabla
       const responseIncidents = await axios.get('http://localhost:5000/api/incidentes');
       setIncidentDetails(responseIncidents.data);
 
-      // Obtener datos para gráficos
       const responseCharts = await axios.get('http://localhost:5000/api/dashboard-charts');
-      setLineData(responseCharts.data.lineData);
-      setPieData(responseCharts.data.pieData);
+      setLineData(responseCharts.data.lineData || null);
+      setPieData(responseCharts.data.pieData || null);
     } catch (error) {
-      console.error('Error al cargar datos del backend:', error);
+      console.error('Error al cargar datos:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,62 +69,102 @@ function Dashboard() {
     },
     scales: {
       x: { title: { display: true, text: 'Meses' } },
-      y: { title: { display: true, text: 'Cantidad de Reportes' } },
+      y: { title: { display: true, text: 'Cantidad' } },
     },
   };
 
   return (
     <div className="dashboard-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 className="dash_title">Dashboard</h1>
-        <button onClick={fetchData} style={styles.refreshButton}>
-          Actualizar
-        </button>
-      </div>
-
-      <div className="cards-container">
-        <div className="card">
-          <h2>Reportes</h2>
-          <p className="card-value">{reportCount}</p>
-        </div>
-        <div className="card">
-          <h2>Posibles Ataques</h2>
-          <p className="card-value">{attackCount}</p>
-        </div>
-        <div className="card">
-          <h2>Vulnerabilidades</h2>
-          <div className="circular-container">
-            <CircularProgressbar
-              value={vulnerabilityProgress}
-              text={`${vulnerabilityProgress}%`}
-              styles={buildStyles({
-                textSize: '24px',
-                pathColor: 'green',
-                textColor: 'black',
-                trailColor: '#d6d6d6',
-              })}
-            />
+      <h1 className="dash_title">Dashboard</h1>
+      <button onClick={fetchData} className="refresh-button">
+        Actualizar
+      </button>
+      {loading ? (
+        <p>Cargando datos...</p>
+      ) : (
+        <>
+          <div className="cards-container">
+            <div className="card">
+              <h2>Reportes</h2>
+              <p className="card-value">{reportCount}</p>
+            </div>
+            <div className="card">
+              <h2>Posibles Ataques</h2>
+              <p className="card-value">{attackCount}</p>
+            </div>
+            <div className="card">
+              <h2>Vulnerabilidades</h2>
+              <CircularProgressbar
+                value={vulnerabilityProgress}
+                text={`${vulnerabilityProgress}%`}
+                styles={buildStyles({
+                  textSize: '16px',
+                  pathColor: 'green',
+                  textColor: 'black',
+                  trailColor: '#d6d6d6',
+                })}
+              />
+            </div>
           </div>
-        </div>
-      </div>
-      {/* Espacio para agregar un script */}
-      <script>
-        {`console.log('Espacio para incluir scripts personalizados')`}
-      </script>
+
+          <div className="chart-row">
+            {lineData && lineData.labels ? (
+              <div className="chart-container">
+                <Line options={lineOptions} data={lineData} />
+              </div>
+            ) : (
+              <p>No hay datos para el gráfico de línea.</p>
+            )}
+            {pieData && pieData.labels ? (
+              <div className="chart-container">
+                <Pie
+                  data={pieData}
+                  options={{
+                    plugins: {
+                      legend: { position: 'right' },
+                      title: { display: true, text: 'Distribución de Amenazas' },
+                    },
+                  }}
+                />
+              </div>
+            ) : (
+              <p>No hay datos para el gráfico de pastel.</p>
+            )}
+          </div>
+
+          <div className="data-table">
+            <h2>Incidentes Recientes</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                  <th>Usuario</th>
+                </tr>
+              </thead>
+              <tbody>
+                {incidentDetails.length > 0 ? (
+                  incidentDetails.map((incident) => (
+                    <tr key={incident.ID_Incidente}>
+                      <td>{incident.ID_Incidente}</td>
+                      <td>{incident.Descripcion}</td>
+                      <td>{incident.Estado}</td>
+                      <td>{incident.ID_Usuario}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4">No hay incidentes recientes.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }
-
-const styles = {
-  refreshButton: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: 'blue',
-    color: '#fff',
-    cursor: 'pointer',
-  },
-};
 
 export default Dashboard;
