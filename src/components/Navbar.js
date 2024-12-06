@@ -34,9 +34,9 @@ function Navbar() {
       </div>
       <div className={`links ${isOpen ? 'open' : ''}`}>
         <Link to="/dashboard">Inicio</Link>
-        <Link to="/monitoreo">Monitoreo en Tiempo Real</Link>
-        <Link to="/vulnerabilidades">Vulnerabilidades</Link>
-        <Link to="/amenazas">Amenazas</Link>
+        {/*<Link to="/monitoreo">Monitoreo en Tiempo Real</Link>*/}
+        {/*<Link to="/vulnerabilidades">Vulnerabilidades</Link>*/}
+        {/*<Link to="/amenazas">Amenazas</Link>*/}
         <Link to="/reportes">Reportes</Link>
         <Link to="/incidentes">Incidentes</Link>
         <Link to="/politicas">Políticas</Link>

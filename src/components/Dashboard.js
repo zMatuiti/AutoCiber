@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useTable, useSortBy } from 'react-table';
-import './Dashboard.css';
-import axios from 'axios';
+import React, { useState, useEffect, useMemo } from "react";
+import { useTable, useSortBy } from "react-table";
+import "./Dashboard.css";
+import axios from "axios";
 
 function Dashboard() {
   const [reportCount, setReportCount] = useState(0);
+  const [policyCount, setPolicyCount] = useState(0); // Contador de Políticas Activas
+  const [incidentCount, setIncidentCount] = useState(0); // Contador de Incidentes
   const [reportDetails, setReportDetails] = useState([]);
   const [incidentDetails, setIncidentDetails] = useState([]);
   const [activePolicies, setActivePolicies] = useState([]);
@@ -13,20 +15,20 @@ function Dashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const responsePolicies = await axios.get('http://localhost:5000/api/politicas');
+      const responsePolicies = await axios.get("http://localhost:5000/api/politicas");
       const activePolicies = responsePolicies.data.filter((policy) => policy.Activa === 1);
       setActivePolicies(activePolicies);
+      setPolicyCount(activePolicies.length); // Número de Políticas Activas
 
-      const responseReports = await axios.get('http://localhost:5000/api/reportes');
+      const responseReports = await axios.get("http://localhost:5000/api/reportes");
       setReportCount(responseReports.data.length || 0);
       setReportDetails(responseReports.data);
 
-      const responseIncidents = await axios.get('http://localhost:5000/api/incidentes');
+      const responseIncidents = await axios.get("http://localhost:5000/api/incidentes");
       setIncidentDetails(responseIncidents.data);
-
-      await axios.get('http://localhost:5000/api/scriptRoutes');
+      setIncidentCount(responseIncidents.data.length); // Número de Incidentes
     } catch (error) {
-      console.error('Error al cargar datos:', error);
+      console.error("Error al cargar datos:", error);
     } finally {
       setLoading(false);
     }
@@ -38,28 +40,28 @@ function Dashboard() {
 
   const policyColumns = useMemo(
     () => [
-      { Header: 'Nombre', accessor: 'Nombre' },
-      { Header: 'Descripcion', accessor: 'Descripcion' },
-      { Header: 'Fecha', accessor: 'Fecha_implementacion' },
+      { Header: "Nombre", accessor: "Nombre" },
+      { Header: "Descripcion", accessor: "Descripcion" },
+      { Header: "Fecha", accessor: "Fecha_implementacion" },
     ],
     []
   );
 
   const reportColumns = useMemo(
     () => [
-      { Header: 'ID', accessor: 'ID_Reporte' },
-      { Header: 'Fecha', accessor: 'Fecha_Generacion' },
-      { Header: 'Tipo', accessor: 'Tipo_Reporte' },
-      { Header: 'Detalles', accessor: 'Detalles' },
-      { Header: 'Generado Por', accessor: 'Generado_Por' },
+      { Header: "ID", accessor: "ID_Reporte" },
+      { Header: "Fecha", accessor: "Fecha_Generacion" },
+      { Header: "Tipo", accessor: "Tipo_Reporte" },
+      { Header: "Detalles", accessor: "Detalles" },
+      { Header: "Generado Por", accessor: "Generado_Por" },
     ],
     []
   );
 
   const incidentColumns = useMemo(
     () => [
-      { Header: 'Descripción', accessor: 'Descripcion' },
-      { Header: 'Estado', accessor: 'Estado' },
+      { Header: "Descripción", accessor: "Descripcion" },
+      { Header: "Estado", accessor: "Estado" },
     ],
     []
   );
@@ -78,10 +80,8 @@ function Dashboard() {
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                  </span>
+                  {column.render("Header")}
+                  <span>{column.isSorted ? (column.isSortedDesc ? " 🔽" : " 🔼") : ""}</span>
                 </th>
               ))}
             </tr>
@@ -93,7 +93,7 @@ function Dashboard() {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                 ))}
               </tr>
             );
@@ -117,6 +117,14 @@ function Dashboard() {
             <div className="card">
               <h2>Reportes</h2>
               <p className="card-value">{reportCount}</p>
+            </div>
+            <div className="card">
+              <h2>Políticas Activas</h2>
+              <p className="card-value">{policyCount}</p>
+            </div>
+            <div className="card">
+              <h2>Incidentes Recientes</h2>
+              <p className="card-value">{incidentCount}</p>
             </div>
           </div>
 
