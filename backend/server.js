@@ -12,8 +12,9 @@ const reportesRouter = require('./routes/reportes');
 const rolesRouter = require('./routes/roles'); 
 const tipoPoliticaRouter = require('./routes/tipo-politica');
 const scriptRoutes = require('./routes/scriptRoutes');
-
-
+const amenazasRouter = require('./routes/amenazas');
+const estadoAmenazaRouter = require('./routes/estado_amenaza');
+const nivelSeveridadRouter = require('./routes/nivel_severidad');
 
 const app = express();
 
@@ -30,8 +31,9 @@ app.use('/api/reportes', reportesRouter);
 app.use('/api/roles', rolesRouter); 
 app.use('/api/tipo-politica', tipoPoliticaRouter);
 app.use('/api/script', scriptRoutes);
-
-
+app.use('/api/amenazas', amenazasRouter);
+app.use('/api/estado_amenaza', estadoAmenazaRouter);
+app.use('/api/nivel_severidad', nivelSeveridadRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Servidor corriendo correctamente' });

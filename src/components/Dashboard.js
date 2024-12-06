@@ -5,11 +5,13 @@ import axios from "axios";
 
 function Dashboard() {
   const [reportCount, setReportCount] = useState(0);
-  const [policyCount, setPolicyCount] = useState(0); // Contador de Políticas Activas
-  const [incidentCount, setIncidentCount] = useState(0); // Contador de Incidentes
+  const [policyCount, setPolicyCount] = useState(0);
+  const [incidentCount, setIncidentCount] = useState(0);
+  const [resolvedThreatsPercentage, setResolvedThreatsPercentage] = useState(0); // Porcentaje de amenazas resueltas
   const [reportDetails, setReportDetails] = useState([]);
   const [incidentDetails, setIncidentDetails] = useState([]);
   const [activePolicies, setActivePolicies] = useState([]);
+  const [threatsInProcessOrPending, setThreatsInProcessOrPending] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -18,7 +20,7 @@ function Dashboard() {
       const responsePolicies = await axios.get("http://localhost:5000/api/politicas");
       const activePolicies = responsePolicies.data.filter((policy) => policy.Activa === 1);
       setActivePolicies(activePolicies);
-      setPolicyCount(activePolicies.length); // Número de Políticas Activas
+      setPolicyCount(activePolicies.length);
 
       const responseReports = await axios.get("http://localhost:5000/api/reportes");
       setReportCount(responseReports.data.length || 0);
@@ -26,7 +28,22 @@ function Dashboard() {
 
       const responseIncidents = await axios.get("http://localhost:5000/api/incidentes");
       setIncidentDetails(responseIncidents.data);
-      setIncidentCount(responseIncidents.data.length); // Número de Incidentes
+      setIncidentCount(responseIncidents.data.length);
+
+      const responseThreats = await axios.get("http://localhost:5000/api/amenazas");
+      const threats = responseThreats.data;
+
+      // Calcular amenazas resueltas
+      const resolvedThreats = threats.filter((threat) => threat.Estado === "resuelto").length;
+      const totalThreats = threats.length;
+      const percentage = totalThreats > 0 ? ((resolvedThreats / totalThreats) * 100).toFixed(2) : 0;
+      setResolvedThreatsPercentage(percentage);
+
+      // Filtrar amenazas en estado "en proceso" o "pendiente"
+      const filteredThreats = threats.filter(
+        (threat) => threat.Estado === "en proceso" || threat.Estado === "pendiente"
+      );
+      setThreatsInProcessOrPending(filteredThreats);
     } catch (error) {
       console.error("Error al cargar datos:", error);
     } finally {
@@ -66,9 +83,22 @@ function Dashboard() {
     []
   );
 
+  const threatsColumns = useMemo(
+    () => [
+      { Header: "ID Amenaza", accessor: "ID_Amenaza" },
+      { Header: "Tipo Amenaza", accessor: "ID_tipo_amenaza" },
+      { Header: "Fecha Detección", accessor: "Fecha_deteccion" },
+      { Header: "Severidad", accessor: "Nivel_severidad" },
+      { Header: "Descripción", accessor: "Descripcion" },
+      { Header: "Estado", accessor: "Estado" },
+    ],
+    []
+  );
+
   const policyTable = useTable({ columns: policyColumns, data: activePolicies }, useSortBy);
   const reportTable = useTable({ columns: reportColumns, data: reportDetails }, useSortBy);
   const incidentTable = useTable({ columns: incidentColumns, data: incidentDetails }, useSortBy);
+  const threatsTable = useTable({ columns: threatsColumns, data: threatsInProcessOrPending }, useSortBy);
 
   const renderTable = (tableInstance) => {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
@@ -126,12 +156,23 @@ function Dashboard() {
               <h2>Incidentes Recientes</h2>
               <p className="card-value">{incidentCount}</p>
             </div>
+            <div className="card">
+              <h2>% Amenazas Resueltas</h2>
+              <p className="card-value">{resolvedThreatsPercentage}%</p>
+            </div>
           </div>
 
-          <div className="data-table">
-            <h2>Políticas de Seguridad Activas</h2>
-            {renderTable(policyTable)}
+          <div className="table-container">
+            <div className="table-item">
+              <h2>Políticas de Seguridad Activas</h2>
+              {renderTable(policyTable)}
+            </div>
+            <div className="table-item">
+              <h2>Incidentes Recientes</h2>
+              {renderTable(incidentTable)}
+            </div>
           </div>
+
 
           <div className="data-table">
             <h2>Detalles de Reportes</h2>
@@ -139,8 +180,8 @@ function Dashboard() {
           </div>
 
           <div className="data-table">
-            <h2>Incidentes Recientes</h2>
-            {renderTable(incidentTable)}
+            <h2>Amenazas en Proceso o Pendiente</h2>
+            {renderTable(threatsTable)}
           </div>
         </>
       )}

@@ -14,18 +14,15 @@ import Dispositivos from './components/Dispositivos';
 import Amenazas from './components/Amenazas';
 
 function App() {
-  // Leer el estado de autenticación desde localStorage al cargar la app
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('isAuthenticated') === 'true';
   });
 
-  // Guardar el estado en localStorage cuando cambie
   useEffect(() => {
     localStorage.setItem('isAuthenticated', isAuthenticated);
   }, [isAuthenticated]);
 
   const handleLogout = () => {
-    // Al cerrar sesión, se actualiza el estado y se elimina del localStorage
     setIsAuthenticated(false);
     localStorage.removeItem('isAuthenticated');
   };

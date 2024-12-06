@@ -1,29 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
+import axios from 'axios';
 
-// Datos de vulnerabilidades
-const data = [
-  { id: 1, description: 'SQL Injection en la Base de Datos', severity: 'Alta', status: 'Sin Resolver' },
-  { id: 2, description: 'Cross-Site Scripting (XSS)', severity: 'Media', status: 'Resuelto' },
-  { id: 3, description: 'Ataque de fuerza bruta detectado', severity: 'Alta', status: 'Investigando' },
-];
+function Vulnerabilidades(){
+  const [vulnerabilidades, setVulnerabilidades] = useState([]);
 
-// Definición de las columnas
-const columns = [
-  { Header: 'ID', accessor: 'id' },
-  { Header: 'Descripción', accessor: 'description' },
-  { Header: 'Severidad', accessor: 'severity' },
-  { Header: 'Estado', accessor: 'status' },
-];
+  //obtener amenazas
+  useEffect(() => {
+    const fetchVulnerabilidades = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/amenazas');
+        setVulnerabilidades(response.data);
+      } catch (error) {
+        console.error('Error al cargar amenazas:', error);
+      }
+    };
 
-function Vulnerabilidades() {
+    fetchVulnerabilidades();
+  }, []);
+
+  const columns = useMemo(() => [
+    { Header: 'ID', accessor: 'ID_Amenaza' },
+    { Header: 'Descripcion', accessor: 'Descripcion'},
+    { Header: 'Severidad', accessor: 'Nivel_severidad'},
+    { Header: 'Estado', accessor: 'Estado'},
+  ], []);
+
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({ columns, data }, useSortBy); // Añadimos el hook useSortBy para habilitar el ordenamiento
+  } = useTable({ columns, vulnerabilidades }, useSortBy); // Añadimos el hook useSortBy para habilitar el ordenamiento
 
   return (
     <div style={styles.container}>
@@ -65,6 +75,8 @@ function Vulnerabilidades() {
     </div>
   );
 }
+
+
 
 const styles = {
   container: {
