@@ -4,11 +4,11 @@ import './Dashboard.css';
 import axios from 'axios';
 
 function Dashboard() {
-  const [reportCount, setReportCount] = useState(0); // Contador de reportes
-  const [reportDetails, setReportDetails] = useState([]); // Detalles de reportes
-  const [incidentDetails, setIncidentDetails] = useState([]); // Detalles de incidentes
-  const [activePolicies, setActivePolicies] = useState([]); // Políticas activas
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [reportCount, setReportCount] = useState(0);
+  const [reportDetails, setReportDetails] = useState([]);
+  const [incidentDetails, setIncidentDetails] = useState([]);
+  const [activePolicies, setActivePolicies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
@@ -23,6 +23,8 @@ function Dashboard() {
 
       const responseIncidents = await axios.get('http://localhost:5000/api/incidentes');
       setIncidentDetails(responseIncidents.data);
+
+      await axios.get('http://localhost:5000/api/scriptRoutes');
     } catch (error) {
       console.error('Error al cargar datos:', error);
     } finally {
@@ -34,7 +36,6 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  // Configuración de las tablas para react-table
   const policyColumns = useMemo(
     () => [
       { Header: 'Nombre', accessor: 'Nombre' },

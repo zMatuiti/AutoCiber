@@ -11,6 +11,9 @@ const politicasRouter = require('./routes/politicas');
 const reportesRouter = require('./routes/reportes');
 const rolesRouter = require('./routes/roles'); 
 const tipoPoliticaRouter = require('./routes/tipo-politica');
+const scriptRoutes = require('./routes/scriptRoutes');
+
+
 
 const app = express();
 
@@ -26,6 +29,8 @@ app.use('/api/politicas', politicasRouter);
 app.use('/api/reportes', reportesRouter);
 app.use('/api/roles', rolesRouter); 
 app.use('/api/tipo-politica', tipoPoliticaRouter);
+app.use('/api/script', scriptRoutes);
+
 
 
 app.get('/', (req, res) => {
